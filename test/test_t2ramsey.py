@@ -208,12 +208,12 @@ class TestT2Ramsey(QiskitTestCase):
             expdata.block_for_results()  # Wait for job/analysis to finish.
             result = expdata.analysis_results()
             self.assertAlmostEqual(
-                result[0].data()["value"],
+                result[0].value.value,
                 estimated_t2ramsey * dt_factor,
                 delta=3 * dt_factor,
             )
             self.assertAlmostEqual(
-                result[1].data()["value"],
+                result[1].value.value,
                 estimated_freq / dt_factor,
                 delta=3 / dt_factor,
             )
@@ -247,9 +247,9 @@ class TestT2Ramsey(QiskitTestCase):
 
         for i in range(2):
             sub_res = expdata.component_experiment_data(i).analysis_results()
-            self.assertAlmostEqual(sub_res[0].data()["value"], t2ramsey[i], delta=3)
+            self.assertAlmostEqual(sub_res[0].value.value, t2ramsey[i], delta=3)
             self.assertAlmostEqual(
-                sub_res[1].data()["value"],
+                sub_res[1].value.value,
                 estimated_freq[i] / dt_factor,
                 delta=3 / dt_factor,
             )
@@ -307,12 +307,12 @@ class TestT2Ramsey(QiskitTestCase):
         expdata1.block_for_results()
         result = expdata1.analysis_results()
         self.assertAlmostEqual(
-            result[2].data()["value"],
+            result[2].value.value,
             estimated_t2ramsey * dt_factor,
             delta=3 * dt_factor,
         )
         self.assertAlmostEqual(
-            result[3].data()["value"], estimated_freq / dt_factor, delta=3 / dt_factor
+            result[3].value.value, estimated_freq / dt_factor, delta=3 / dt_factor
         )
-        self.assertLessEqual(result[2].data()["stderr"], result[0].data()["stderr"])
+        self.assertLessEqual(result[2].value.stderr, result[0].value.stderr)
         self.assertEqual(len(expdata1.data()), len(delays0) + len(delays1))
