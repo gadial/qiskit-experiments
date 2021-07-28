@@ -132,24 +132,30 @@ class TestRBAnalysis(QiskitTestCase):
             )
 
     def _validate_fitting_parameters(
-        self, calculated_analysis_samples_data: list, expected_analysis_samples_data: list
+        self, calculated_analysis_samples_data: list, expected_analysis_samples_data: dict
     ):
         """
         The function checking that the results of the analysis matches to the expected one.
         Args:
             calculated_analysis_samples_data(list): list of dictionary containing the
             analysis result.
-            expected_analysis_samples_data(list): list of dictionary containing the analysis
+            expected_analysis_samples_data(dict): list of dictionary containing the analysis
                 expected result.
         """
+
         keys_for_array_data = ["popt", "popt_err", "pcov", "xrange"]
         keys_for_string_data = ["popt_keys", "analysis_type"]
         for idx, calculated_analysis_sample_data in enumerate(calculated_analysis_samples_data):
-            for key in calculated_analysis_sample_data.data():
+            self.assertTrue(
+                calculated_analysis_sample_data.name
+                == expected_analysis_samples_data[idx]["analysis_type"],
+                "The analysis_type doesn't match to the one expected.",
+            )
+            for key in calculated_analysis_sample_data.extra:
                 if key in keys_for_array_data:
                     self.assertTrue(
                         matrix_equal(
-                            calculated_analysis_sample_data.data()[key],
+                            calculated_analysis_sample_data.extra[key],
                             expected_analysis_samples_data[idx][key],
                             rtol=RTOL_DEFAULT,
                             atol=ATOL_DEFAULT,
@@ -158,27 +164,27 @@ class TestRBAnalysis(QiskitTestCase):
                         + key
                         + "', doesn't match the expected value."
                         + "\n {} != {}".format(
-                            calculated_analysis_sample_data.data()[key],
+                            calculated_analysis_sample_data.extra[key],
                             expected_analysis_samples_data[idx][key],
                         ),
                     )
                 else:
                     if key in keys_for_string_data:
                         self.assertTrue(
-                            calculated_analysis_sample_data.data()[key]
+                            calculated_analysis_sample_data.extra[key]
                             == expected_analysis_samples_data[idx][key],
                             "The analysis_type doesn't match to the one expected.",
                         )
                     else:
                         if key == "EPG":
                             self._validate_epg(
-                                calculated_analysis_sample_data.data()[key],
+                                calculated_analysis_sample_data.extra[key],
                                 expected_analysis_samples_data[idx][key],
                             )
                         else:
                             self.assertTrue(
                                 np.allclose(
-                                    np.float64(calculated_analysis_sample_data.data()[key]),
+                                    np.float64(calculated_analysis_sample_data.extra[key]),
                                     np.float64(expected_analysis_samples_data[idx][key]),
                                 ),
                                 msg="The calculated value for key '"
@@ -226,7 +232,7 @@ class TestRBAnalysis(QiskitTestCase):
                 os.path.join(dir_name, rb_analysis_file_name)
             )
             self._validate_fitting_parameters(
-                analysis_obj.analysis_results(None), analysis_data_expected
+                analysis_obj.analysis_results(), analysis_data_expected[0]
             )
 
     def _load_rb_data(self, rb_exp_data_file_name: str):
@@ -324,3 +330,5 @@ class TestInterleavedRBAnalysis(TestRBAnalysis):
             "rb_interleaved_2qubits_output_analysis.json",
         ]
         self._run_tests(rb_exp_data_file_names, rb_exp_analysis_file_names)
+
+TestStandardRBAnalysis().test_standard_rb_analysis_test()
