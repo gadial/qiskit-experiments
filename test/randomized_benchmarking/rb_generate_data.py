@@ -148,7 +148,7 @@ def _analysis_save(experiment_obj, analysis_file_path: str, analysis_type: str):
             }
             analysis_json_dict[result.name] = result_dict
 
-    print("Writing to file",analysis_file_path)
+    print("Writing to file", analysis_file_path)
     with open(analysis_file_path, "w") as json_file:
         json.dump(analysis_json_dict, json_file, cls=ExperimentEncoder)
 
@@ -226,6 +226,7 @@ def _generate_int_rb_fitter_data(dir_name: str, rb_exp_name: str, exp_attributes
         joined_list_data = [exp_attributes, exp_results]
         json_file.write(json.dumps(joined_list_data))
     _analysis_save(experiment_obj, analysis_file_path, "InterleavedRBanalysis")
+
 
 DIRNAME = os.path.dirname(os.path.abspath(__file__))
 for rb_type in sys.argv[1:]:

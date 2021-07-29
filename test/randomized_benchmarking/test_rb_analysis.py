@@ -125,9 +125,7 @@ class TestRBAnalysis(QiskitTestCase):
                 "the gate sequence length isn't in the setup length list.",
             )
 
-    def _validate_fitting_parameters(
-        self, calculated_analysis: list, expected_analysis: dict
-    ):
+    def _validate_fitting_parameters(self, calculated_analysis: list, expected_analysis: dict):
         """
         The function checking that the results of the analysis matches to the expected one.
         Args:
@@ -139,35 +137,42 @@ class TestRBAnalysis(QiskitTestCase):
         for result in calculated_analysis:
             if result.name in expected_analysis:
                 for key, expected_value in expected_analysis[result.name].items():
-                    if key == 'value':
+                    if key == "value":
                         calculated_value = result.value
                     else:
                         calculated_value = result.extra[key]
                     if isinstance(calculated_value, FitVal):
-                        self.assertTrue(matrix_equal(
-                            calculated_value.value, expected_value.value,
-                             "The calculated value for the key '"
-                            + key
-                            + "', doesn't match the expected value."
-                            + "\n {} != {}".format(
-                                calculated_value,
-                                expected_value,
-                            ),
-                        ))
+                        self.assertTrue(
+                            matrix_equal(
+                                calculated_value.value,
+                                expected_value.value,
+                                "The calculated value for the key '"
+                                + key
+                                + "', doesn't match the expected value."
+                                + "\n {} != {}".format(
+                                    calculated_value,
+                                    expected_value,
+                                ),
+                            )
+                        )
                     elif isinstance(calculated_value, np.ndarray):
-                        self.assertTrue(matrix_equal(
-                            calculated_value, expected_value,
-                             "The calculated value for the key '"
-                            + key
-                            + "', doesn't match the expected value."
-                            + "\n {} != {}".format(
+                        self.assertTrue(
+                            matrix_equal(
                                 calculated_value,
                                 expected_value,
-                            ),
-                        ))
+                                "The calculated value for the key '"
+                                + key
+                                + "', doesn't match the expected value."
+                                + "\n {} != {}".format(
+                                    calculated_value,
+                                    expected_value,
+                                ),
+                            )
+                        )
                     else:
                         self.assertEqual(
-                            calculated_value, expected_value,
+                            calculated_value,
+                            expected_value,
                             "The calculated value for the key '"
                             + key
                             + "', doesn't match the expected value."
