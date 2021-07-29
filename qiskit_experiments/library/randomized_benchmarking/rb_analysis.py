@@ -219,15 +219,16 @@ class RBAnalysis(curve.CurveAnalysis):
                     quality=quality,
                 )
             )
-        # TODO: the EPG dict should be broken up into separate
-        # analysis results for each gate on each qubit
         if "EPG" in result_data:
-            analysis_results.append(
-                AnalysisResultData(
-                    "EPG",
-                    FitVal(result_data["EPG"], result_data.get("EPG_err")),
-                    chisq=chisq,
-                    quality=quality,
-                )
-            )
+            for qubits, gate_dict in result_data["EPG"].items():
+                for gate, value in gate_dict.items():
+                    epg_name = "EPG_{}_{}".format(gate, "_".join([str(q) for q in qubits]))
+                    analysis_results.append(
+                        AnalysisResultData(
+                            epg_name,
+                            FitVal(value, None), #TODO: add EPG_err computation
+                            chisq=chisq,
+                            quality=quality,
+                        )
+                    )
         return analysis_results, figures
